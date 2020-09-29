@@ -1,0 +1,86 @@
+package com.company;
+
+import java.io.File;  // Import the File class
+import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.util.Scanner; // Import the Scanner class to read text files
+import java.io.FileWriter;   // Import the FileWriter class
+import java.io.IOException;
+import javax.swing.JFrame;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+
+public class Main extends JFrame {
+
+    public static void main(String[] args) {
+        Flashcard("text.txt");
+    }
+
+    public static void Flashcard(String filename) {
+        String str1 = "";
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
+        try {
+            int Ocount = 0;
+            int tcount = 0;
+            int CardNum = 0;
+
+            FileWriter writer = new FileWriter("Flash.txt");
+
+            File note = new File(filename);
+            Scanner reader = new Scanner(note);
+
+            while (reader.hasNextLine()) {
+                String tab = "\t";
+                String temp = reader.nextLine();
+
+                for (int i = 0; i < temp.length(); i++) {
+                    if (temp.charAt(i) == '/') {
+                        i++;
+                        if (temp.charAt(i) == 't') {
+                            tcount++;
+                        }
+                    }
+                }
+
+                temp.replaceAll("\\n", " ");
+                temp.replaceAll("\\t", ""); //does this work?
+
+                //what if the file starts with tab? The code has not accounted for that
+                //what if there are tab for construction purpose in the text, the code has not account for that
+                //Do I need to account for enter-spaces that might not stand for newlines
+                //Does not takes in all lines and make a card out of them
+
+                if (tcount > Ocount) {
+                    if (CardNum == 0) {
+                        writer.write(str1 + ", " + tcount);
+                        CardNum = 1;
+                    } else {
+                        writer.write(str1 + "\n" + "\n" + tcount);
+                        CardNum = 0;
+                    }
+                    Ocount = tcount;
+                    str1 = temp;
+                } else if (tcount == Ocount) {
+                    str1 = str1 + temp + "did it" + tcount;
+                } else {
+                    CardNum = 0;
+                    Ocount = tcount;
+                    writer.write(str1 + "\n" + "dud");
+                    str1 = "\n" + temp + tcount;
+                }
+                //did not account for when the text pattern is going back forward
+                tcount = 0;
+            }
+            reader.close();
+            writer.close();
+
+        } catch (FileNotFoundException e){
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+}
