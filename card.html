@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial;
+                color: white;
+                background-color: rgba(255, 99, 71, 0.5);
+            }
+            .centered {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+            .horizontalcentered {
+                text-align: center;
+                position: absolute;
+                left: 50%;
+                transform: translate(-50%, 0%);
+            }
+            .flashcard {
+                width: 450px;
+                height: 300px;
+                background-color: transparent;
+                perspective: 1000px;
+            }
+            .flashcard-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+                transition: transform 0.8s;
+                transform-style: preserve-3d;
+            }
+            .flashcard-front {
+                background-color: white;
+                color: black;
+                text-align: center;
+            }
+            .flashcard-back {
+                background-color: white;
+                color: black;
+                transform: rotateX(180deg);
+            }
+            .flashcard-front, .flashcard-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+            .flashcard:hover .flashcard-inner {
+                transform: rotateX(180deg);
+            }
+            .button-group button{
+                background-color: white;
+                border: transparent;
+                color: black;
+                cursor: pointer;
+                float: left;
+                outline: none;
+                border-radius: 50%;
+                padding: 6px 10px;
+            }
+            .button-group:after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+            .button-group .btn2:hover .arrow.right{
+                border: solid rgba(255, 99, 71, 1);
+                border-width: 0 5px 5px 0;
+                display: inline-block;
+                padding: 3px;
+                transform: rotate(-45deg);
+                -webkit-transform: rotate(-45deg);
+            }
+            .button-group .btn1:hover .arrow.left{
+                border: solid rgba(255, 99, 71, 1);
+                border-width: 0 5px 5px 0;
+                display: inline-block;
+                padding: 3px;
+                transform: rotate(135deg);
+                -webkit-transform: rotate(135deg);
+            }
+            .arrow {
+                border: solid black;
+                border-width: 0 5px 5px 0;
+                display: inline-block;
+                padding: 3px;
+            }
+            .right {
+                transfrom: rotate(-45deg);
+                -webkit-transform: rotate(-45deg);
+            }
+            .left {
+                transform: rotate(135deg);
+                -webkit-transform: rotate(135deg);
+            }
+            input[type = "file"] {
+                display: none;
+            }
+            .custom-file-button {
+                border: 2px solid rgb(255, 196, 0);
+                background-color:rgb(255, 224, 86);
+                display: inline-block;
+                padding: 10px 12px;
+                color: black;
+                cursor: pointer;
+                border-radius: 10px;
+            }
+        </style>
+        <script>
+            var text = '{"questionlist": [{"cardfront": "card number 1","cardback": "this is number one"},{"cardfront": "card number 2","cardback": "this is number two"},{"cardfront": "card number 3","cardback": "this is number three"}]}';
+            obj = JSON.parse(text);
+            //alert(Object.keys(obj.questionlist).length);
+            var count = 0;
+            function readfile() {
+                var file = document.getElementById("myFile").files[0];
+                const reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = function () { 
+                    text = reader.result;
+                    obj = JSON.parse(text);
+                    alert(text);
+                    count = -1;
+                    rightclick();
+                }
+            }
+            function leftclick() {
+                if (count !== 0) {
+                    count = count-1;
+                    var x = document.getElementById("cardfront");
+                    x.innerHTML = obj.questionlist[count].cardfront;
+                    var y = document.getElementById("cardback");
+                    y.innerHTML = obj.questionlist[count].cardback;
+                    var keep = document.getElementById("keeper");
+                    keep.innerHTML = (count + 1) + "/" + Object.keys(obj.questionlist).length;
+                }
+            }
+            function rightclick() {
+                if (count !== Object.keys(obj.questionlist).length - 1) {
+                    count = count + 1;
+                    var x = document.getElementById("cardfront");
+                    x.innerHTML = obj.questionlist[count].cardfront;
+                    var y = document.getElementById("cardback");
+                    y.innerHTML = obj.questionlist[count].cardback;
+                    var keep = document.getElementById("keeper");
+                    keep.innerHTML = (count + 1) + "/" + Object.keys(obj.questionlist).length;
+                }
+            }
+            function btnBKGchange(id) {
+                var x = document.getElementById(id);
+                x.style.backgroundColor = "#F5F5F5";
+            }
+            function bkgBack(id) {
+                var x = document.getElementById(id);
+                x.style.backgroundColor = "white";
+            }
+        </script>
+    </head>
+    <body>
+        <div class = "centered">
+            <label for = "myFile" class = "custom-file-button" onclick = "changeJsonFile()"> Upload File </label>
+            <input type = "file" id = "myFile" onchange = "readfile()">
+            <h2 style = "margin: 35px; color: #CC5058;">Section Title</h2>
+            <div class = "flashcard">
+                <div class = "flashcard-inner">
+                    <div class = "flashcard-front">
+                        <div class = "centered">
+                            <h1 id = "cardfront"></h1>
+                            <script>
+                                var x = document.getElementById("cardfront");
+                                x.innerHTML = obj.questionlist[count].cardfront;
+                            </script>
+                        </div>
+                    </div>
+                    <div class = "flashcard-back">
+                        <div class = "centered">
+                            <p id = "cardback"></p>
+                            <script>
+                                var x = document.getElementById("cardback");
+                                x.innerHTML = obj.questionlist[count].cardback;
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style = "padding: 10px 10px"> </div>
+            <div class = "horizontalcentered">
+                <div class = "button-group">
+                    <button class = "btn1" id = "leftbutton" onclick = "leftclick()" onmousedown = "btnBKGchange(this.id)" onmouseup = "bkgBack(this.id)"> <i class = "arrow left"></i> </button>
+                    <div style = "float: left; padding: 7px 50px; " id = "keeper"></div>
+                    <script>
+                        var keep = document.getElementById("keeper");
+                        keep.innerHTML = (count + 1) + "/" + Object.keys(obj.questionlist).length;
+                    </script>
+                    <button class = "btn2" id = "rightbutton" onclick = "rightclick()"> <i class="arrow right"></i> </button>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
